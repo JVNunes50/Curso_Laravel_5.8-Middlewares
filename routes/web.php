@@ -14,6 +14,10 @@ Route::get('/terceiro', function(){
 
 Route::get('/produtos', 'ProdutoContolador@index');
 
+Route::get('/negado', function(){
+    return "Acesso negado!";
+})->name('negado');
+
 Route::post('/login', function(Request $request){
     $login_ok = false;
     switch ($request->input('user')) {
@@ -28,8 +32,16 @@ Route::post('/login', function(Request $request){
             break;
     }
     if($login_ok){
+        $login = ['user'=>$request->input('user')];
+        $request->session()->put('login', $login);
         return response("Login OK", 200);
     }else{
+        $request->session()->flush();
         return response("Erro no login", 404);
     }
+});
+
+Route::get('/logout', function(Request $request){
+    $request->session()->flush();
+    return response('Deslogado com sucesso', 200);
 });
